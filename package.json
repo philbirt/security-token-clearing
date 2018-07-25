@@ -1,0 +1,33 @@
+{
+  "name": "@openfinance/security-token-settlement",
+  "version": "0.1.0",
+  "description": "A library to support settling permissioned tokens",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OpenFinanceIO/security-token-settlement.git"
+  },
+  "keywords": [
+    "tokens",
+    "permissioned",
+    "settlement",
+    "exchange"
+  ],
+  "author": "OpenFinance developers",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/OpenFinanceIO/security-token-settlement/issues"
+  },
+  "homepage": "https://github.com/OpenFinanceIO/security-token-settlement#readme",
+  "devDependencies": {
+    "@0xproject/typescript-typings": "^1.0.0",
+    "@types/mocha": "^5.2.5"
+  },
+  "dependencies": {
+    "moment": "^2.22.2",
+    "web3": "^0.20.6"
+  }
+}
