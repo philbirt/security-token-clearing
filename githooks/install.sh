@@ -2,4 +2,4 @@
 
 gittop=$(git rev-parse --show-toplevel)
 cd $gittop
-ln --symbolic ./githooks/pre-commit .git/hooks
+ln --symbolic $gittop/githooks/pre-commit .git/hooks
