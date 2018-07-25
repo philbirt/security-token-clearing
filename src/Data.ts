@@ -17,9 +17,22 @@ export type Status = "none" | "approved" | "rejected";
  * A status which is only valid until an expiration date.
  */
 export interface ScopedStatus {
-  expiry: Date;
+  expiration: Date;
   status: Status;
 }
+
+/**
+ * A commitment to a value, with an expiration.
+ */
+export interface ScopedCommitment {
+  commitment: string;
+  expiration: Date;
+}
+
+/**
+ * Use this to tag parts of a discriminated union.
+ */
+export type Tagged<Tag, X> = X & { tag: Tag };
 
 /**
  * The hash of transaction published to the chain
@@ -54,24 +67,18 @@ export namespace SecurityToken {
    */
   export interface Investor {
     id: Identifier;
-    kyc: {
-      commitment: string;
-      status: ScopedStatus;
-    } | null;
-    accreditation: {
-      commitment: string;
-      status: ScopedStatus;
-    } | null;
+    kyc: ScopedCommitment & { type: "kyc" } | null;
+    accreditation: ScopedCommitment & { type: "accreditation" } | null;
     country: Country | null;
   }
   /**
    * Possible reasons that a transfer could fail.
    */
   export type TransferError =
-    | "buyer.insufficientFunds"
     | "buyer.kyc"
     | "buyer.accreditation"
     | "seller.kyc"
+    | "seller.insufficientFunds"
     | "holdingPeriodActive"
     | "maximumShareholdersExceeded";
 }

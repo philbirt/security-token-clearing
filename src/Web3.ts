@@ -1,5 +1,5 @@
-import * as Web3 from "web3";
 import { TransactionReceipt } from "ethereum-types";
+import * as Web3 from "web3";
 
 export interface ConfiguredWeb3 {
   web3: Web3;
@@ -24,7 +24,7 @@ export async function txReceipt(
     const attempt = () => {
       web3.eth.getTransactionReceipt(
         txHash,
-        (err: Error, receipt: TransactionReceipt) => {
+        (err: Error, receipt: TransactionReceipt | null) => {
           if (err !== null) {
             reject(err);
           } else if (receipt !== null) {
@@ -36,7 +36,7 @@ export async function txReceipt(
       );
     };
     attempt();
-  });
+  }) as Promise<TransactionReceipt>;
 }
 
 /**
@@ -46,4 +46,11 @@ export function receiptsRetriever(
   web3: Web3
 ): (hashes: Array<string>) => Promise<Array<TransactionReceipt>> {
   return async hashes => Promise.all(hashes.map(hash => txReceipt(hash, web3)));
+}
+
+/**
+ * Comprehension of success field for ganache-cli, geth. and parity
+ */
+export function success(txr: TransactionReceipt): boolean {
+  return txr.status === 1 || txr.status === "0x1" || txr.status === "0x01";
 }

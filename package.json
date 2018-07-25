@@ -24,9 +24,11 @@
   "homepage": "https://github.com/OpenFinanceIO/security-token-settlement#readme",
   "devDependencies": {
     "@0xproject/typescript-typings": "^1.0.0",
+    "@types/ethereumjs-util": "^5.2.0",
     "@types/mocha": "^5.2.5"
   },
   "dependencies": {
+    "ethereumjs-util": "^5.2.0",
     "moment": "^2.22.2",
     "web3": "^0.20.6"
   }

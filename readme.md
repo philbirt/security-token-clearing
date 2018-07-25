@@ -12,4 +12,5 @@ details of token implementation which exchange operators do not need to know.
 Supported tokens
 --
 
-- Securitize Digital Securities (DS) standard
+- (WIP) Securitize Digital Securities (DS) standard
+- (WIP) OpenFinance S3
