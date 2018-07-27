@@ -96,6 +96,14 @@ export interface Inspection<InvestorType, IdType> {
   ) => Promise<InvestorType | null>;
 
   /**
+   * Retrieve the documents that are represented by a commitment.
+   */
+  openCommitment: (
+    commitment: string,
+    investorId: IdType
+  ) => Promise<Exchange.Documentation | null>;
+
+  /**
    * When all of the data for a transfer is known, test for an obstruction to
    * settling the transfer.
    */
