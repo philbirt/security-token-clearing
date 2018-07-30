@@ -67,8 +67,8 @@ export namespace SecurityToken {
    */
   export interface Investor {
     id: Identifier;
-    kyc: ScopedCommitment & { type: "kyc" } | null;
-    accreditation: ScopedCommitment & { type: "accreditation" } | null;
+    kyc: ScopedCommitment | null;
+    accreditation: ScopedCommitment | null;
     country: Country | null;
   }
   /**
