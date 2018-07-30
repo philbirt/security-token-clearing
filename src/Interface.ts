@@ -96,14 +96,6 @@ export interface Inspection<InvestorType, IdType> {
   ) => Promise<InvestorType | null>;
 
   /**
-   * Retrieve the documents that are represented by a commitment.
-   */
-  openCommitment: (
-    commitment: string,
-    investorId: IdType
-  ) => Promise<Exchange.Documentation | null>;
-
-  /**
    * When all of the data for a transfer is known, test for an obstruction to
    * settling the transfer.
    */
@@ -138,6 +130,23 @@ export interface Inspection<InvestorType, IdType> {
     tokenAddress: string,
     quantity: number
   ) => Promise<null | SecurityToken.TransferError>;
+}
+
+/**
+ * Exchanges should implment a commit-reveal scheme
+ */
+export interface Committing<IdType> {
+  /**
+   * Create a commitment for some documentation
+   */
+  commit: (docs: Exchange.Documentation) => ScopedCommitment;
+  /**
+   * Retrieve the documents that are represented by a commitment.
+   */
+  openCommitment: (
+    commitment: string,
+    investorId: IdType
+  ) => Promise<Exchange.Documentation | null>;
 }
 
 /**
