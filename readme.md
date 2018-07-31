@@ -13,4 +13,5 @@ Supported tokens
 --
 
 - (WIP) Securitize Digital Securities (DS) standard
+- (WIP) PolyMath ST20
 - (WIP) OpenFinance S3
