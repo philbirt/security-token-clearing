@@ -4,9 +4,9 @@ import * as Web3 from "web3";
 export interface ConfiguredWeb3 {
   web3: Web3;
   /**
-   * Gas price in gwei
+   * A mechanism to provide a reasonable gas price in gwei
    */
-  gasPrice: number;
+  gasPrice: () => Promise<number>;
   /**
    * This address is used to send transactions.
    */
