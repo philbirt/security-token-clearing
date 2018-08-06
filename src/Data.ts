@@ -4,6 +4,20 @@
 export type Country = string;
 
 /**
+ * A directed acyclic graph with the property that each edge is a compliant
+ * transfer.  The list should be ordered by increasing block position.
+ */
+export type ChainOfCustody = Array<
+  [
+    [number, number], // [blockNumber, transactionIndex]
+    string, // transaction hash
+    string, // src address
+    string, // dest address
+    number // quantity
+  ]
+>;
+
+/**
  * The portfolio should be keyed by token addresses.
  */
 export type Portfolio = Map<string, number>;

@@ -1,4 +1,5 @@
 import {
+  ChainOfCustody,
   Exchange,
   ScopedStatus,
   SecurityToken,
@@ -130,6 +131,16 @@ export interface Inspection<InvestorType, IdType> {
     tokenAddress: string,
     quantity: number
   ) => Promise<null | SecurityToken.TransferError>;
+
+  /**
+   * Construct a compliant history of trades which lead to the current user's holdings.
+   * @param quantity If not null, only construct a compliant history justifying this quantity
+   */
+  chainOfCustody: (
+    investorAddress: string,
+    tokenAddress: string,
+    quanity: number | null
+  ) => Promise<null | ChainOfCustody>;
 }
 
 /**
