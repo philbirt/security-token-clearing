@@ -160,3 +160,20 @@ export interface Tradable<InvestorType, IdType> {
   ) => Inspection<InvestorType, IdType>;
   utils: Utils<InvestorType, IdType>;
 }
+
+/**
+ * To facilitate testing, a security token platform should also implement the Testable type.
+ */
+export interface Testable<InvestorType, IdType>
+  extends Tradable<InvestorType, IdType> {
+  /**
+   * This function should create a `Universe` value representing a *fresh*
+   * deployment of security tokens, configured to match the `Unviverse`.
+   */
+  universe: (
+    master: string,
+    exchange: string,
+    investors: Array<Exchange.Investor>,
+    web3: Web3
+  ) => Promise<Testing.Universe>;
+}

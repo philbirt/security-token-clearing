@@ -98,7 +98,7 @@ export namespace Exchange {
    * Documentation consists of a time-scoped collection of document binaries
    * with human readable annotations.
    *
-   * NOTE: the cannonical ordering on documents binaries is the ascending
+   * NOTE: the canonical ordering on documents binaries is the ascending
    * bytestring order.
    */
   export interface Documentation {
