@@ -2,7 +2,7 @@
 stability: experimental
 ---
 
-security-token-settlement
+security-token-clearing
 ==
 
 There is a huge space of possible ways to implement and administer permissioned
