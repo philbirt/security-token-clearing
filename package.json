@@ -1,27 +1,27 @@
 {
-  "name": "@openfinance/security-token-settlement",
+  "name": "@openfinance/security-token-clearing",
   "version": "0.1.0",
-  "description": "A library to support settling permissioned tokens",
+  "description": "A library to support clearing permissioned tokens",
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/OpenFinanceIO/security-token-settlement.git"
+    "url": "git+https://github.com/OpenFinanceIO/security-token-clearing.git"
   },
   "keywords": [
     "tokens",
     "permissioned",
-    "settlement",
+    "clearing",
     "exchange"
   ],
   "author": "OpenFinance developers",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/OpenFinanceIO/security-token-settlement/issues"
+    "url": "https://github.com/OpenFinanceIO/security-token-clearing/issues"
   },
-  "homepage": "https://github.com/OpenFinanceIO/security-token-settlement#readme",
+  "homepage": "https://github.com/OpenFinanceIO/security-token-clearing#readme",
   "devDependencies": {
     "@0xproject/typescript-typings": "^1.0.0",
     "@types/ethereumjs-util": "^5.2.0",
