@@ -5,6 +5,7 @@ import {
   Status,
   ScopedCommitment,
   Tagged,
+  Testing,
   Transcript
 } from "./Data";
 import { ConfiguredWeb3 } from "./Web3";
@@ -17,14 +18,7 @@ import * as Web3 from "web3";
 /**
  * (Pure) functions for working with security token data.
  */
-export interface Utils<InvestorType, IdType> {
-  /**
-   * Compute the primary id to represent a user to the system, as well as a
-   * secondary id that can be used to detect when the same user has joined more
-   * than once with different government ids.
-   */
-  investorId: (investor: Exchange.Investor) => IdType;
-
+export interface Utils<InvestorType> {
   /**
    * Transform an exchange investor into a security token investor.
    */
@@ -158,7 +152,7 @@ export interface Tradable<InvestorType, IdType> {
     controller: string,
     web3: Web3
   ) => Inspection<InvestorType, IdType>;
-  utils: Utils<InvestorType, IdType>;
+  utils: Utils<InvestorType>;
 }
 
 /**
@@ -168,7 +162,7 @@ export interface Testable<InvestorType, IdType>
   extends Tradable<InvestorType, IdType> {
   /**
    * This function should create a `Universe` value representing a *fresh*
-   * deployment of security tokens, configured to match the `Unviverse`.
+   * deployment of security tokens, configured to match the `Universe`.
    */
   universe: (
     master: string,
