@@ -96,7 +96,7 @@ export interface Inspection<InvestorType, IdType> {
   transferObstruction: (
     sourceAddress: string,
     destinationAddress: string,
-    quanitity: number,
+    quantity: number,
     tokenAddress: string
   ) => Promise<null | SecurityToken.TransferError>;
 
@@ -127,9 +127,13 @@ export interface Inspection<InvestorType, IdType> {
 }
 
 /**
- * Exchanges should implment a commit-reveal scheme
+ * Protocols can depend on a commit-reveal scheme for documentation
+ * encapsulated by the following interface.   
+ * 
+ * It should satisfy:
+ * `docs === await scheme.openCommitment(scheme.commit(docs))`
  */
-export interface Committing<IdType> {
+export interface Committing {
   /**
    * Create a commitment for some documentation
    */
@@ -138,8 +142,7 @@ export interface Committing<IdType> {
    * Retrieve the documents that are represented by a commitment.
    */
   openCommitment: (
-    commitment: string,
-    investorId: IdType
+    commitment: string
   ) => Promise<Exchange.Documentation | null>;
 }
 
@@ -156,7 +159,8 @@ export interface Tradable<InvestorType, IdType> {
 }
 
 /**
- * To facilitate testing, a security token platform should also implement the Testable type.
+ * To facilitate testing, a security token platform should also implement the
+ * Testable type.
  */
 export interface Testable<InvestorType, IdType>
   extends Tradable<InvestorType, IdType> {

@@ -55,18 +55,10 @@ export type Transcript = Array<Receipt>;
 
 export namespace SecurityToken {
   /**
-   * An identifier that can be used to detect when the same user has registered
-   * more than once.
-   */
-  export interface Identifier {
-    primary: string;
-    secondary: string;
-  }
-  /**
    * An investor from the permissioned token's point of view
    */
-  export interface Investor {
-    id: Identifier;
+  export interface Investor<IdType> {
+    id: IdType;
     kyc: ScopedCommitment | null;
     accreditation: ScopedCommitment | null;
     country: Country | null;
