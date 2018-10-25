@@ -26,12 +26,15 @@
     "@0xproject/typescript-typings": "^1.0.0",
     "@types/ethereumjs-util": "^5.2.0",
     "@types/mocha": "^5.2.5",
+    "chai": "^4.2.0",
     "mocha": "^5.2.0"
   },
   "dependencies": {
+    "@types/chai": "^4.1.6",
     "ethereumjs-util": "^5.2.0",
     "moment": "^2.22.2",
     "polymathjs": "^1.6.0",
+    "truffle-hdwallet-provider": "0.0.6",
     "web3": "^0.20.6"
   }
 }

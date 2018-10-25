@@ -8,5 +8,5 @@ export {
   Testing,
   TransactionHash,
   Transcript
-} from "./Data";
+} from "./Types";
 export { Utils, Management, Tradable } from "./Interface";
