@@ -25,7 +25,8 @@
   "devDependencies": {
     "@0xproject/typescript-typings": "^1.0.0",
     "@types/ethereumjs-util": "^5.2.0",
-    "@types/mocha": "^5.2.5"
+    "@types/mocha": "^5.2.5",
+    "mocha": "^5.2.0"
   },
   "dependencies": {
     "ethereumjs-util": "^5.2.0",
