@@ -4,7 +4,7 @@
   "description": "A library to support clearing permissioned tokens",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tsc -p tsconfig.test.json && mocha dist-test/*"
   },
   "repository": {
     "type": "git",

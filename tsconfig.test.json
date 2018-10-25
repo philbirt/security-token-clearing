@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist-test",
+    "types": [
+      "@0xproject/typescript-typings/types/web3",
+      "node",
+      "mocha"
+    ]
+  },
+  "include": [
+    "./src/**/*",
+    "./test/*"
+  ]
+}
