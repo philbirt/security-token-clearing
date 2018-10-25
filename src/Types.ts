@@ -1,4 +1,9 @@
 /**
+ * An Ethereum address
+ */
+export type Address = string;
+
+/**
  * ISO 3166-1 alpha-2 country code
  */
 export type Country = string;
@@ -6,7 +11,7 @@ export type Country = string;
 /**
  * The portfolio should be keyed by token addresses.
  */
-export type Portfolio = Map<string, number>;
+export type Portfolio = Map<Address, number>;
 
 /**
  * The possible statuses for user KYC etc.
@@ -53,6 +58,11 @@ export interface Receipt {
  */
 export type Transcript = Array<Receipt>;
 
+/**
+ * Possible exemption types for a security which trades in the US
+ */
+export type ExemptionType = "rega" | "regcf" | "regd" | "regds" | "regs";
+
 export namespace SecurityToken {
   /**
    * An investor from the permissioned token's point of view
@@ -97,6 +107,31 @@ export namespace Exchange {
     documents: Array<[string, Buffer]>;
     expiration: Date;
   }
+  /**
+   * The exchange view of the token should include the exemption type and some
+   * parameters.
+   */
+  export interface BaseToken {
+    address: Address;
+    description?: string;
+    precision: number;
+    symbol: string;
+  } 
+  export interface RegDToken extends BaseToken {
+    exemptionType: "regd";
+    params: { 
+      isFund: boolean; 
+      holdingPeriodEnd: Date; 
+    }
+  }
+  export interface RegDSToken extends BaseToken {
+    exemptionType: "regds";
+    params: { 
+      isFund: boolean; 
+      holdingPeriodEnd: Date; 
+    }
+  }
+  export type Token = RegDToken | RegDSToken | (BaseToken & { exemptionType: "rega" | "regcf" | "regs" });
 }
 
 /**
@@ -109,7 +144,7 @@ export namespace Testing {
    * deployed token.
    */
   export interface Token {
-    address: string;
+    address: Address;
     symbol: string;
     precision: number;
     description: string;
@@ -130,10 +165,10 @@ export namespace Testing {
      * A token for each different configuration of rules, etc. `tokens` should be
      * keyed by token symbol.
      */
-    tokens: Map<string, Token>;
+    tokens: Map<Address, Token>;
     /**
      * Sample investors, including their balances
      */
-    investors: Array<[Investor]>;
+    investors: Array<Investor>;
   }
 }
