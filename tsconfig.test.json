@@ -5,7 +5,8 @@
     "types": [
       "@0xproject/typescript-typings/types/web3",
       "node",
-      "mocha"
+      "mocha",
+      "chai"
     ]
   },
   "include": [
