@@ -1,5 +1,6 @@
 const HDWalletProvider = require("truffle-hdwallet-provider");
 
+import { deployPolymath } from "../src/PolyMath/Fixtures";
 import * as PM from "polymathjs";
 import { NetworkParams } from "polymathjs/types";
 import * as Web3 from "web3";
@@ -10,6 +11,8 @@ const provider = new HDWalletProvider(
   );
 
 const web3 = new Web3(provider);
+const controller = web3.eth.accounts[0];
+const exchange = web3.eth.accounts[1];
 
 const cWeb3 = {
   controller: "master",
@@ -31,8 +34,24 @@ const networkParams = {
 PM.SecurityToken.setParams(networkParams);
 
 describe("PolyMath interface", () => {
-  it("should add user represtatation to token");
-  it("should update user representation to token");
-  it("should detect non-KYC user");
-  it("should detect shareholder limit violation");
+  it("should deploy a whitelisted token", async () => {
+    await deployPolymath(controller, exchange, "regulated", web3);
+  });
+
+  describe("putInvestor", () => {
+    it("should accurately install an investor", async function() {});
+    it("should be idempotent", async function() {});
+    it("should update user representation to token");
+    it("should detect non-KYC user");
+  });
+
+  describe("transferObstruction", () => {
+    it("should allow an OK trade", async function() {});
+    it("should detect shareholder limit violation");
+
+    describe("failing trades", async function() {
+      it("should fail a trade when the buyer is not OK for REG S");
+      it("should fail a trade when the seller is not OK for REG S");
+    });
+  });
 });
