@@ -4,7 +4,7 @@ import * as PM from "polymathjs";
 import { BigNumber } from "bignumber.js";
 import { TransactionReceipt } from "ethereum-types";
 import * as Web3 from "web3";
-import * as w3u from "web3/lib/utils/utils";
+import * as w3u from "web3-utils";
 import { ConfiguredWeb3, txReceipt } from "../Web3";
 
 // Security Token Clearing imports
