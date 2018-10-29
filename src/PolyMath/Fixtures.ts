@@ -24,6 +24,27 @@ export async function deployPolymath(
 ) {
   console.log("Deploying polymath...");
 
+  //
+  // TODO: Leverage the CLI here:
+  // {
+  //   tokenConfig: { name: "Polymath Token", symbol: "PMTT", divisible: false, },
+  //   mintingConifg: {
+  //      multimint: true,
+  //      // Requires "./CLI/data/multi_mint_data.csv" with whitelist data, which
+  //      // will likely be a detriment for moving polymath-core into an npm module
+  //      // Unable to pass file path as an argument
+  //   },
+  //   stoConfig: {
+  //      type: "Capped",
+  //      cap: 500000,
+  //      startTime: , // Uses unix epoch time
+  //      endTime: , // Uses unix epoch time
+  //      wallet: "",
+  //      raiseType: "E"
+  //   },
+  // }
+  //
+
   return {
     token: {
       address: "",
@@ -54,10 +75,17 @@ export const polymathUniverse = async (
 
   const portfolio: Map<string, number> = new Map([["PTOKEN", 2000]]);
   const testingInvestors: PMTesting.Investor[] = await Promise.all(
+    //
+    // TODO: Determine if we need to use this configuration per investor,
+    //       or if we can just use a multimint configuration when using the CLI script.
+    //
     investors.map(async (investor) => {
       console.log(`Configuring investor ${investor.address}`);
 
-      // TODO: Removed the first argument of the interface
+      //
+      // TODO: Removed the first argument of the interface, we likely need to keep it
+      //       to conform to the overall interface
+      //
       await putInvestor(investor.address, tokenAddress, {
         controller: master,
         gasPrice: async () => {
@@ -68,6 +96,9 @@ export const polymathUniverse = async (
 
       console.log("Issuing tokens");
 
+      //
+      // TODO: Determine if this can go away with a multimint configuration
+      //
       polymath.token.issueTokens(investor.address, 1e8, {
         from: master,
         gas: 2e6,
