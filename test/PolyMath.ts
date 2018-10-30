@@ -1,4 +1,5 @@
 const HDWalletProvider = require("truffle-hdwallet-provider");
+import assert = require('assert');
 
 import { deployPolymath } from "../src/PolyMath/Fixtures";
 import * as PM from "polymathjs";
@@ -35,7 +36,8 @@ PM.SecurityToken.setParams(networkParams);
 
 describe("PolyMath interface", () => {
   it("should deploy a whitelisted token", async () => {
-    await deployPolymath(controller, exchange, "regulated", web3);
+    const address = await deployPolymath(controller, exchange, "regulated", web3);
+    return assert.ok(address);
   });
 
   describe("putInvestor", () => {

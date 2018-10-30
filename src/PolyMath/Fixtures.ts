@@ -1,3 +1,5 @@
+import { execSync } from "child_process";
+
 import * as moment from "moment";
 import * as PM from "polymathjs";
 import * as Web3 from "web3";
@@ -22,35 +24,15 @@ export async function deployPolymath(
   complianceType: "notRegulated" | "whitelisted" | "regulated",
   web3: Web3,
 ) {
-  console.log("Deploying polymath...");
 
-  //
-  // TODO: Leverage the CLI here:
-  // {
-  //   tokenConfig: { name: "Polymath Token", symbol: "PMTT", divisible: false, },
-  //   mintingConifg: {
-  //      multimint: true,
-  //      // Requires "./CLI/data/multi_mint_data.csv" with whitelist data, which
-  //      // will likely be a detriment for moving polymath-core into an npm module
-  //      // Unable to pass file path as an argument
-  //   },
-  //   stoConfig: {
-  //      type: "Capped",
-  //      cap: 500000,
-  //      startTime: , // Uses unix epoch time
-  //      endTime: , // Uses unix epoch time
-  //      wallet: "",
-  //      raiseType: "E"
-  //   },
-  // }
-  //
+  console.log("Getting POLY from faucet...");
+  execSync("cd polymath-core && node CLI/polymath-cli faucet 0x627306090abaB3A6e1400e9345bC60c78a8BEf57 200000");
 
-  return {
-    token: {
-      address: "",
-      issueTokens: (a: any, b: any, c: any) => { console.log("issueTokens"); },
-    },
-  };
+  console.log("Deploying Polymath STO...");
+  const deployOutput = execSync("cd polymath-core && node CLI/polymath-cli st20generator -c capped_sto_data.yml", { timeout: 300000 }).toString();
+  const matches: any = deployOutput.match(/Address:\s*(.*)/);
+
+  return matches[1];
 }
 
 export const polymathUniverse = async (
@@ -60,8 +42,7 @@ export const polymathUniverse = async (
   regime: "regulated" | "notRegulated",
   web3: Web3,
 ) => {
-  const polymath = await deployPolymath(master, exchange, regime, web3);
-  const tokenAddress = polymath.token.address;
+  const tokenAddress = await deployPolymath(master, exchange, regime, web3);
 
   // TODO: Do we need to use this exchange documentation for polymath?
   //
@@ -99,10 +80,10 @@ export const polymathUniverse = async (
       //
       // TODO: Determine if this can go away with a multimint configuration
       //
-      polymath.token.issueTokens(investor.address, 1e8, {
-        from: master,
-        gas: 2e6,
-      });
+      // polymath.token.issueTokens(investor.address, 1e8, {
+      //   from: master,
+      //   gas: 2e6,
+      // });
 
       return {
         ...investor,
