@@ -35,6 +35,10 @@ const networkParams = {
 PM.SecurityToken.setParams(networkParams);
 
 describe("PolyMath interface", () => {
+  after( () => {
+    provider.engine.stop();
+  });
+
   it("should deploy a whitelisted token", () => {
     const address = deployPolymath(controller, exchange, "regulated", web3);
     return assert.ok(address);
