@@ -18,7 +18,7 @@ import {
 
 import { putInvestor } from "./Interface";
 
-export async function deployPolymath(
+export function deployPolymath(
   controller: string,
   exchange: string,
   complianceType: "notRegulated" | "whitelisted" | "regulated",
