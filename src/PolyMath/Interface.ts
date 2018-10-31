@@ -47,6 +47,8 @@ export async function putInvestor(
   const pmInvestor: any = {
     address: primaryWallet,
   };
+
+  // TODO: This does not return an investor, it returns a transaction
   const newInvestor: SecurityToken.Investor<string> = await transferManager.modifyWhitelist(pmInvestor);
 
   // const receipt = await receipt(
