@@ -10,16 +10,13 @@ import { ConfiguredWeb3, txReceipt } from "../Web3";
 // Security Token Clearing imports
 import * as Interface from "../Interface";
 import {
+  Exchange,
   Receipt,
   ScopedCommitment,
   SecurityToken,
   Tagged,
   Transcript,
 } from "../Types";
-
-import {
-  PMExchange,
-} from "./Types";
 
 const toWei = (x: number | string | BigNumber, u: string) =>
   new BigNumber(w3u.toWei(x, u)).toString();
