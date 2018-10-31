@@ -43,17 +43,6 @@ export const polymathUniverse = async (
   web3: Web3,
 ) => {
   const tokenAddress = await deployPolymath(master, exchange, regime, web3);
-
-  // TODO: Do we need to use this exchange documentation for polymath?
-  //
-  // const expiration = moment()
-  //   .add(30, "days")
-  //   .toDate();
-  // const mockDocs: Exchange.Documentation = {
-  //   documents: [["passport", Buffer.from("abcdef")]],
-  //   expiration,
-  // };
-
   const portfolio: Map<string, number> = new Map([["PTOKEN", 2000]]);
   const testingInvestors: PMTesting.Investor[] = await Promise.all(
     //
