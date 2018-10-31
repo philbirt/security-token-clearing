@@ -24,10 +24,9 @@ export async function deployPolymath(
   complianceType: "notRegulated" | "whitelisted" | "regulated",
   web3: Web3,
 ) {
-  console.log("Getting POLY from faucet...");
+  // Retrive POLY from the faucet
   execSync("node CLI/polymath-cli faucet 0x627306090abaB3A6e1400e9345bC60c78a8BEf57 200000", { cwd: "polymath-core" });
-
-  console.log("Deploying Polymath STO & SecurityToken...");
+  // Deploy a SecurityToken & STO
   const deployOutput = execSync("node CLI/polymath-cli st20generator -c capped_sto_data.yml", { cwd: "polymath-core", timeout: 300000 }).toString();
 
   const securityTokenInitialDeployMatches: any = deployOutput.match(/Deployed Token at address: (.*)/);

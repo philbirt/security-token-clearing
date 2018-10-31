@@ -48,12 +48,14 @@ describe("PolyMath interface", async () => {
     provider.engine.stop();
   });
 
-  it("should deploy a whitelisted token", async () => {
-    const tokenAddress = await deployPolymath(controller, exchange, "regulated", web3);
-    const securityToken = new PM.SecurityToken(tokenAddress);
-    assert.equal(tokenAddress, await securityToken.address);
-    assert.equal(controller, await securityToken.owner());
-    assert.equal("CAP Token", await securityToken.name());
+  describe("deployPolymath", () => {
+    it("should deploy a whitelisted token", async () => {
+      const tokenAddress = await deployPolymath(controller, exchange, "regulated", web3);
+      const securityToken = new PM.SecurityToken(tokenAddress);
+      assert.equal(tokenAddress, await securityToken.address);
+      assert.equal(controller, await securityToken.owner());
+      assert.equal("CAP Token", await securityToken.name());
+    });
   });
 
   describe("putInvestor", () => {
