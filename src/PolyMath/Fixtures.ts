@@ -5,14 +5,14 @@ import * as PM from "polymathjs";
 import * as Web3 from "web3";
 
 import {
+  Exchange,
   Portfolio,
   ScopedCommitment,
   Tagged,
+  Testing,
 } from "../Types";
 
 import {
-  PMExchange,
-  PMTesting,
   PMSecurityToken,
 } from "./Types";
 
@@ -47,25 +47,25 @@ export async function deployPolymath(
 export const polymathUniverse = async (
   master: string,
   exchange: string,
-  investors: PMExchange.Investor[],
+  investors: Exchange.Investor[],
   regime: "regulated" | "notRegulated",
   web3: Web3,
 ) => {
   const tokenAddress = await deployPolymath(master, exchange, regime, web3);
-  const portfolio: Map<string, number> = new Map([["PTOKEN", 2000]]);
-  const testingInvestors: PMTesting.Investor[] = await Promise.all(
+  const portfolio: Map<string, number> = new Map([["CAP", 2000]]);
+  const testingInvestors: Testing.Investor[] = await Promise.all(
     //
     // TODO: Determine if we need to use this configuration per investor,
     //       or if we can just use a multimint configuration when using the CLI script.
     //
     investors.map(async (investor) => {
-      console.log(`Configuring investor ${investor.address}`);
+      console.log(`Configuring investor ${investor.primaryWallet}`);
 
       //
       // TODO: Removed the first argument of the interface, we likely need to keep it
       //       to conform to the overall interface
       //
-      await putInvestor(investor.address, tokenAddress, {
+      await putInvestor(investor.primaryWallet, tokenAddress, {
         controller: master,
         gasPrice: async () => {
           return 5;
@@ -85,13 +85,16 @@ export const polymathUniverse = async (
 
       return {
         ...investor,
+        portfolio,
+        kyc: null,
+        accreditation: null,
       };
     }),
   );
-  const u: PMTesting.Universe = {
+  const u: Testing.Universe = {
     investors: testingInvestors,
     tokens: new Map([
-      ["PTOKEN", { description: "Polymath Token", precision: 6, symbol: "PMTT", address: tokenAddress }],
+      ["CAP", { description: "CAP Token", precision: 6, symbol: "CAP", address: tokenAddress }],
     ]),
   };
   return u;
