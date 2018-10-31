@@ -7,13 +7,15 @@ import { NetworkParams } from "polymathjs/types";
 import * as Web3 from "web3";
 
 const provider = new HDWalletProvider(
-    "candy maple cake sugar pudding cream honey rich smooth crumble sweet treat",
-    "http://localhost:8545",
-  );
+  "candy maple cake sugar pudding cream honey rich smooth crumble sweet treat",
+  "http://localhost:8545",
+  0,
+  2, // Number of accounts generated
+);
 
 const web3 = new Web3(provider);
-const controller = web3.eth.accounts[0];
-const exchange = web3.eth.accounts[1];
+let controller: string;
+let exchange: string;
 
 const cWeb3 = {
   controller: "master",
@@ -23,25 +25,33 @@ const cWeb3 = {
   web3,
 };
 
-const networkParams = {
-  account: "0x627306090abab3a6e1400e9345bc60c78a8bef57", // transactions sender
-  id: "*", // Local Network
-  web3,
-  web3WS: web3, // Web3 1.0 instance supplied with WebsocketProvider, it can be the same instance as the one above
-  txHashCallback: (hash: Object) => console.log(hash), // receives a transaction hash every time one was generated
-  txEndCallback: (receipt: Object) => console.log(receipt), // receives a transaction receipt every time one was mined
-};
+describe("PolyMath interface", async () => {
+  before(async () => {
+    await web3.eth.getAccounts((error: any, accounts: any) => {
+      controller = accounts[0];
+      exchange = accounts[1];
+    });
 
-PM.SecurityToken.setParams(networkParams);
+    const networkParams = {
+      account: controller, // transactions sender
+      id: "*", // Local Network
+      web3,
+      web3WS: web3, // Web3 1.0 instance supplied with WebsocketProvider, it can be the same instance as the one above
+      txHashCallback: (hash: Object) => console.log(hash), // receives a transaction hash every time one was generated
+      txEndCallback: (receipt: Object) => console.log(receipt), // receives a transaction receipt every time one was mined
+    };
 
-describe("PolyMath interface", () => {
+    PM.SecurityToken.setParams(networkParams);
+  });
+
   after( () => {
     provider.engine.stop();
   });
 
-  it("should deploy a whitelisted token", () => {
+  it("should deploy a whitelisted token", async () => {
     const address = deployPolymath(controller, exchange, "regulated", web3);
-    return assert.ok(address);
+    const securityToken = new PM.SecurityToken(address);
+    assert.equal(address, securityToken.address);
   });
 
   describe("putInvestor", () => {
