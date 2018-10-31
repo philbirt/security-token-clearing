@@ -10,7 +10,7 @@ const provider = new HDWalletProvider(
   "candy maple cake sugar pudding cream honey rich smooth crumble sweet treat",
   "http://localhost:8545",
   0,
-  2, // Number of accounts generated
+  10, // Number of accounts generated
 );
 
 const web3 = new Web3(provider);
@@ -49,9 +49,11 @@ describe("PolyMath interface", async () => {
   });
 
   it("should deploy a whitelisted token", async () => {
-    const address = deployPolymath(controller, exchange, "regulated", web3);
-    const securityToken = new PM.SecurityToken(address);
-    assert.equal(address, securityToken.address);
+    const tokenAddress = await deployPolymath(controller, exchange, "regulated", web3);
+    const securityToken = new PM.SecurityToken(tokenAddress);
+    assert.equal(tokenAddress, await securityToken.address);
+    assert.equal(controller, await securityToken.owner());
+    assert.equal("CAP Token", await securityToken.name());
   });
 
   describe("putInvestor", () => {
