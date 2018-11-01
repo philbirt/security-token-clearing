@@ -28,6 +28,7 @@ export async function putInvestor(
 ): Promise<Transcript> {
   const { controller, web3 } = cWeb3;
   const gasPrice = toWei(await cWeb3.gasPrice(), "gwei");
+
   const transcript: Receipt[] = [];
   const appendToTranscript = (description: string, r: TransactionReceipt) => {
     transcript.push({
@@ -43,22 +44,15 @@ export async function putInvestor(
 
   const pmInvestor: any = {
     address: primaryWallet,
+    from: new Date(),
+    to: new Date(),
+    expiry: new Date(),
+    canBuyFromSTO: true,
   };
 
-  // TODO: This does not return an investor, it returns a transaction
-  const newInvestor: SecurityToken.Investor<string> = await transferManager.modifyWhitelist(pmInvestor);
-
-  // const receipt = await receipt(
-  //   registry.registerInvestor(id, "", {
-  //     from: controller,
-  //     gas: 3e5,
-  //     gasPrice
-  //   })
-  // );
-  // appendToTranscript("registers investor", receipt);
-
-  console.log(securityToken);
-  console.log(newInvestor);
+  const newInvestorTransaction: any = await transferManager.modifyWhitelist(pmInvestor);
+  const investorReceipt = await receipt(newInvestorTransaction.transactionHash);
+  appendToTranscript("registers investor", investorReceipt);
 
   return transcript;
 }
