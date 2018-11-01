@@ -44,13 +44,12 @@ export async function putInvestor(
   const securityToken: any = new PM.SecurityToken(tokenAddr);
   const transferManager: any = await securityToken.getTransferManager();
 
-  // TODO: Understand the from, to paramaters, pass in the investor object
+  // TODO: Only update these fields if they are not already set
   const pmInvestor: any = {
     address: primaryWallet,
     from: new Date(),
     to: new Date(),
     expiry: investor.kyc!.expiration,
-    canBuyFromSTO: true,
   };
 
   const newInvestorTransaction: any = await transferManager.modifyWhitelist(pmInvestor);
