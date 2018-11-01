@@ -64,13 +64,13 @@ export const polymathUniverse = async (
       // TODO: Removed the first argument of the interface, we likely need to keep it
       //       to conform to the overall interface
       //
-      await putInvestor(investor.primaryWallet, tokenAddress, {
-        controller: master,
-        gasPrice: async () => {
-          return 5;
-        },
-        web3,
-      });
+      // await putInvestor(investor.primaryWallet, tokenAddress, {
+      //   controller: master,
+      //   gasPrice: async () => {
+      //     return 5;
+      //   },
+      //   web3,
+      // });
 
       console.log("Issuing tokens");
 
