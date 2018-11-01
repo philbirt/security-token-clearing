@@ -1,5 +1,6 @@
 const HDWalletProvider = require("truffle-hdwallet-provider");
 import { assert } from "chai";
+import * as moment from "moment";
 
 import { deployPolymath } from "../src/PolyMath/Fixtures";
 import { putInvestor } from "../src/PolyMath/Interface";
@@ -21,6 +22,11 @@ const provider = new HDWalletProvider(
 );
 
 const web3 = new Web3(provider);
+
+const getInvestorFromWhitelist = async (transferManager: any, address: Address) => {
+  const whitelist = await transferManager.getWhitelist();
+  return whitelist.filter((investor: any) => investor.address === address)[0];
+};
 
 describe("PolyMath interface", async () => {
   before(async function() {
@@ -74,7 +80,7 @@ describe("PolyMath interface", async () => {
         id: this.investoraddress1,
         kyc: {
           commitment: "something", // TODO: What is this supposed to be?
-          expiration: new Date(),
+          expiration: new Date(2019, 10, 31),
         },
         accreditation: null, // TODO: Do we need to set this? If so, what?
         country: "United States",
@@ -92,25 +98,43 @@ describe("PolyMath interface", async () => {
       assert(receipt.description, "registers investor");
       assert.typeOf(receipt.hash, "string");
 
-      const whitelist = await this.transferManager.getWhitelist();
-      const whitelistedInvestor = whitelist.filter((investor: any) => investor.address === this.investoraddress1);
-      assert.lengthOf(whitelistedInvestor, 1);
+      const whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investoraddress1);
+      assert.equal(whitelistedInvestor.addedBy, this.controller);
+      assert.equal(whitelistedInvestor.expiry.getTime(), this.investor1.kyc.expiration.getTime());
     });
 
     it("should be idempotent", async function() {
-      const transcript1 = await putInvestor(this.investor1, this.investoraddress1, this.tokenAddress, this.cWeb3);
+      let whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investoraddress1);
+      assert.equal(whitelistedInvestor.addedBy, this.controller);
+      assert.equal(whitelistedInvestor.expiry.getTime(), this.investor1.kyc.expiration.getTime());
+
       const transcript2 = await putInvestor(this.investor1, this.investoraddress1, this.tokenAddress, this.cWeb3);
       const receipt = transcript2[0];
       assert(receipt.description, "registers investor");
       assert.typeOf(receipt.hash, "string");
 
-      const whitelist = await this.transferManager.getWhitelist();
-      const whitelistedInvestor = whitelist.filter((investor: any) => investor.address === this.investoraddress1);
-      assert.lengthOf(whitelistedInvestor, 1);
+      whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investoraddress1);
+      assert.equal(whitelistedInvestor.addedBy, this.controller);
+      assert.equal(whitelistedInvestor.expiry.getTime(), this.investor1.kyc.expiration.getTime());
     });
 
     it("should update user representation to token", async function() {
+      let whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investoraddress1);
+      assert.equal(whitelistedInvestor.expiry.getTime(), this.investor1.kyc.expiration.getTime());
 
+      const investor1New: SecurityToken.Investor<Address> = {
+        id: this.investoraddress1,
+        kyc: {
+          commitment: "something", // TODO: What is this supposed to be?
+          expiration: new Date(2019, 11, 31),
+        },
+        accreditation: null, // TODO: Do we need to set this? If so, what?
+        country: "United States",
+      };
+
+      await putInvestor(investor1New, this.investoraddress1, this.tokenAddress, this.cWeb3);
+      whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investoraddress1);
+      assert.equal(whitelistedInvestor.expiry.getTime(), investor1New.kyc!.expiration.getTime());
     });
 
     it("should detect non-KYC user", async function() {
