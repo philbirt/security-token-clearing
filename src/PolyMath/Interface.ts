@@ -10,6 +10,7 @@ import { ConfiguredWeb3, txReceipt } from "../Web3";
 // Security Token Clearing imports
 import * as Interface from "../Interface";
 import {
+  Address,
   Exchange,
   Receipt,
   ScopedCommitment,
@@ -22,6 +23,7 @@ const toWei = (x: number | string | BigNumber, u: string) =>
   new BigNumber(w3u.toWei(x, u)).toString();
 
 export async function putInvestor(
+  investor: SecurityToken.Investor<Address>,
   primaryWallet: string,
   tokenAddr: string,
   cWeb3: ConfiguredWeb3,
@@ -42,11 +44,12 @@ export async function putInvestor(
   const securityToken: any = new PM.SecurityToken(tokenAddr);
   const transferManager: any = await securityToken.getTransferManager();
 
+  // TODO: Understand the from, to paramaters, pass in the investor object
   const pmInvestor: any = {
     address: primaryWallet,
     from: new Date(),
     to: new Date(),
-    expiry: new Date(),
+    expiry: investor.kyc!.expiration,
     canBuyFromSTO: true,
   };
 
