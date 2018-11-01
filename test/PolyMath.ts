@@ -97,15 +97,23 @@ describe("PolyMath interface", async () => {
       assert.lengthOf(whitelistedInvestor, 1);
     });
 
-    it("should be idempotent", async () => {
+    it("should be idempotent", async function() {
+      const transcript1 = await putInvestor(this.investor1, this.investoraddress1, this.tokenAddress, this.cWeb3);
+      const transcript2 = await putInvestor(this.investor1, this.investoraddress1, this.tokenAddress, this.cWeb3);
+      const receipt = transcript2[0];
+      assert(receipt.description, "registers investor");
+      assert.typeOf(receipt.hash, "string");
+
+      const whitelist = await this.transferManager.getWhitelist();
+      const whitelistedInvestor = whitelist.filter((investor: any) => investor.address === this.investoraddress1);
+      assert.lengthOf(whitelistedInvestor, 1);
+    });
+
+    it("should update user representation to token", async function() {
 
     });
 
-    it("should update user representation to token", async () => {
-
-    });
-
-    it("should detect non-KYC user", async () => {
+    it("should detect non-KYC user", async function() {
 
     });
   });
