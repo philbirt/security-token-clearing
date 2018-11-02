@@ -70,6 +70,16 @@ export async function putInvestor(
     };
   }
 
+  // transferManager.modifyWhitelist handles "removes" by setting 0s for times
+  if (!investor.international) {
+    pmInvestor = {
+      address: primaryWallet,
+      from: moment().subtract(1, "years").toDate(),
+      to: moment().subtract(1, "years").toDate(),
+      expiry: moment().subtract(1, "years").toDate(),
+    };
+  }
+
   const newInvestorTransaction: any = await transferManager.modifyWhitelist(pmInvestor);
   const investorReceipt = await receipt(newInvestorTransaction.transactionHash);
   appendToTranscript("registers investor", investorReceipt);
