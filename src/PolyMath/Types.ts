@@ -1,9 +1,7 @@
-export namespace PMSecurityToken {
-  /**
-   * An investor from the permissioned token's point of view
-   */
-  export interface Investor {
-    address: string;
-    international: boolean;
-  }
+/**
+ * An investor from the permissioned token's point of view
+ */
+export interface Investor {
+  address: string;
+  international: boolean;
 }
