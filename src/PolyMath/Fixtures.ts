@@ -12,10 +12,6 @@ import {
   Testing,
 } from "../Types";
 
-import {
-  PMSecurityToken,
-} from "./Types";
-
 import { putInvestor } from "./Interface";
 
 export async function deployPolymath(
