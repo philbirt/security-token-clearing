@@ -68,29 +68,38 @@ describe("PolyMath interface", async () => {
   describe("putInvestor", () => {
     before(async function() {
       await web3.eth.getAccounts((error: any, accounts: any) => {
-        this.investoraddress1 = accounts[2];
-        this.investoraddress2 = accounts[3];
+        this.investorAddress1 = accounts[2];
+        this.investorAddress2 = accounts[3];
+        this.investorAddress3 = accounts[4];
+        this.investorAddress4 = accounts[5];
       });
 
       const investor1: PMT.Investor = {
-        address: this.investoraddress1,
-        international: false,
+        address: this.investorAddress1,
+        international: true,
+        kyc: true,
+      };
+
+      const investor2: PMT.Investor = {
+        address: this.investorAddress2,
+        international: true,
         kyc: true,
       };
 
       this.investor1 = investor1;
+      this.investor2 = investor2;
       this.tokenAddress = await deployPolymath(this.controller, this.exchange, "regulated", web3);
       this.securityToken = new PM.SecurityToken(this.tokenAddress);
       this.transferManager = await this.securityToken.getTransferManager();
     });
 
     it("should accurately install an investor", async function() {
-      const transcript = await putInvestor(this.investor1, this.investoraddress1, this.tokenAddress, this.cWeb3);
+      const transcript = await putInvestor(this.investor2, this.investorAddress2, this.tokenAddress, this.cWeb3);
       const receipt = transcript[0];
       assert(receipt.description, "registers investor");
       assert.typeOf(receipt.hash, "string");
 
-      const whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investoraddress1);
+      const whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investorAddress2);
       assert.equal(whitelistedInvestor.addedBy, this.controller);
       assert(moment(whitelistedInvestor.expiry).isSame(moment().add(3, "months"), "days"));
       assert(moment(whitelistedInvestor.from).isSame(moment().add(1, "years"), "days"));
@@ -98,15 +107,15 @@ describe("PolyMath interface", async () => {
     });
 
     it("should be idempotent, does not update KYC or transfer validity dates on multiple calls", async function() {
-      let whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investoraddress1);
+      let whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investorAddress1);
       assert.equal(whitelistedInvestor.addedBy, this.controller);
       assert(moment(whitelistedInvestor.expiry).isSame(moment().add(3, "months"), "days"));
       assert(moment(whitelistedInvestor.from).isSame(moment().add(1, "years"), "days"));
       assert(moment(whitelistedInvestor.to).isSame(moment(), "days"));
 
-      await putInvestor(this.investor1, this.investoraddress1, this.tokenAddress, this.cWeb3);
+      await putInvestor(this.investor1, this.investorAddress1, this.tokenAddress, this.cWeb3);
 
-      whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investoraddress1);
+      whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investorAddress1);
       assert.equal(whitelistedInvestor.addedBy, this.controller);
       assert(moment(whitelistedInvestor.expiry).isSame(moment().add(3, "months"), "days"));
       assert(moment(whitelistedInvestor.from).isSame(moment().add(1, "years"), "days"));
@@ -125,26 +134,64 @@ describe("PolyMath interface", async () => {
       });
 
       it("should update KYC validity date to 3 months from now", async function() {
-        let whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investoraddress1);
+        let whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investorAddress1);
         assert.equal(whitelistedInvestor.addedBy, this.controller);
 
         const investor1New: PMT.Investor = {
-          address: this.investoraddress1,
-          international: false,
+          address: this.investorAddress1,
+          international: true,
           kyc: true,
         };
 
-        await putInvestor(investor1New, this.investoraddress1, this.tokenAddress, this.cWeb3);
-        whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investoraddress1);
+        await putInvestor(investor1New, this.investorAddress1, this.tokenAddress, this.cWeb3);
+        whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investorAddress1);
         assert(moment(whitelistedInvestor.expiry).isSame(moment().add(3, "months"), "days"));
       });
 
     });
 
-    context("the country has changed from international to US", async function() {
-      it("should remove investor", async function() {
-        
+    context("the country is set to United States", async function() {
+      before(async function() {
+        const investor3: PMT.Investor = {
+          address: this.investorAddress3,
+          international: false,
+          kyc: true,
+        };
+
+        this.investor3 = investor3;
       });
+
+      it("should add the investor but in a state unable to trade", async function() {
+        await putInvestor(this.investor3, this.investorAddress3, this.tokenAddress, this.cWeb3);
+
+        const whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investorAddress3);
+        assert(moment(whitelistedInvestor.expiry).isSame(moment().subtract(1, "years"), "days"));
+        assert(moment(whitelistedInvestor.from).isSame(moment().subtract(1, "years"), "days"));
+        assert(moment(whitelistedInvestor.to).isSame(moment().subtract(1, "years"), "days"));
+      });
+
+      context("the investor has been whitelisted previously", async function() {
+        before(async function() {
+          const investor4: PMT.Investor = {
+            address: this.investorAddress3,
+            international: true,
+            kyc: true,
+          };
+
+          this.investor4 = investor4;
+          await putInvestor(this.investor4, this.investorAddress4, this.tokenAddress, this.cWeb3);
+        });
+
+        it("should set investor to not be able to trade", async function() {
+          this.investor4.international = false;
+          await putInvestor(this.investor4, this.investorAddress4, this.tokenAddress, this.cWeb3);
+
+          const whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investorAddress4);
+          assert(moment(whitelistedInvestor.expiry).isSame(moment().subtract(1, "years"), "days"));
+          assert(moment(whitelistedInvestor.from).isSame(moment().subtract(1, "years"), "days"));
+          assert(moment(whitelistedInvestor.to).isSame(moment().subtract(1, "years"), "days"));
+        });
+      })
     })
   });
 });
