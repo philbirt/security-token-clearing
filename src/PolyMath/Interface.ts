@@ -4,7 +4,6 @@ import * as PM from "polymathjs";
 import { BigNumber } from "bignumber.js";
 import { TransactionReceipt } from "ethereum-types";
 import * as Web3 from "web3";
-import * as w3u from "web3-utils";
 import { ConfiguredWeb3, txReceipt } from "../Web3";
 
 // Security Token Clearing imports
@@ -19,9 +18,6 @@ import {
   Transcript,
 } from "../Types";
 
-const toWei = (x: number | string | BigNumber, u: string) =>
-  new BigNumber(w3u.toWei(x, u)).toString();
-
 export async function putInvestor(
   investor: SecurityToken.Investor<Address>,
   primaryWallet: string,
@@ -29,7 +25,6 @@ export async function putInvestor(
   cWeb3: ConfiguredWeb3,
 ): Promise<Transcript> {
   const { controller, web3 } = cWeb3;
-  const gasPrice = toWei(await cWeb3.gasPrice(), "gwei");
 
   const transcript: Receipt[] = [];
   const appendToTranscript = (description: string, r: TransactionReceipt) => {
