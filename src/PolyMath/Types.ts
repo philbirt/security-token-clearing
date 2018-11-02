@@ -4,4 +4,5 @@
 export interface Investor {
   address: string;
   international: boolean;
+  kyc: boolean;
 }

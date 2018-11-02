@@ -4,6 +4,7 @@ import * as moment from "moment";
 
 import { deployPolymath } from "../src/PolyMath/Fixtures";
 import { putInvestor } from "../src/PolyMath/Interface";
+import { getInvestorFromWhitelist } from "../src/PolyMath/utils";
 
 import * as PM from "polymathjs";
 import * as Web3 from "web3";
@@ -12,6 +13,7 @@ import {
   Address,
   SecurityToken,
 } from "../src/Types";
+import * as PMT from "../src/PolyMath/Types";
 
 const provider = new HDWalletProvider(
   "candy maple cake sugar pudding cream honey rich smooth crumble sweet treat",
@@ -21,11 +23,6 @@ const provider = new HDWalletProvider(
 );
 
 const web3 = new Web3(provider);
-
-const getInvestorFromWhitelist = async (transferManager: any, address: Address) => {
-  const whitelist = await transferManager.getWhitelist();
-  return whitelist.filter((investor: any) => investor.address === address)[0];
-};
 
 describe("PolyMath interface", async () => {
   before(async function() {
@@ -75,14 +72,10 @@ describe("PolyMath interface", async () => {
         this.investoraddress2 = accounts[3];
       });
 
-      const investor1: SecurityToken.Investor<Address> = {
-        id: this.investoraddress1,
-        kyc: {
-          commitment: "something", // TODO: What is this supposed to be?
-          expiration: new Date(2019, 10, 31),
-        },
-        accreditation: null, // TODO: Do we need to set this? If so, what?
-        country: "United States",
+      const investor1: PMT.Investor = {
+        address: this.investoraddress1,
+        international: false,
+        kyc: true,
       };
 
       this.investor1 = investor1;
@@ -99,55 +92,59 @@ describe("PolyMath interface", async () => {
 
       const whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investoraddress1);
       assert.equal(whitelistedInvestor.addedBy, this.controller);
-      assert.equal(whitelistedInvestor.expiry.getTime(), this.investor1.kyc.expiration.getTime());
+      assert(moment(whitelistedInvestor.expiry).isSame(moment().add(3, "months"), "days"));
+      assert(moment(whitelistedInvestor.from).isSame(moment().add(1, "years"), "days"));
+      assert(moment(whitelistedInvestor.to).isSame(moment(), "days"));
     });
 
-    it("should be idempotent", async function() {
+    it("should be idempotent, does not update KYC or transfer validity dates on multiple calls", async function() {
       let whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investoraddress1);
       assert.equal(whitelistedInvestor.addedBy, this.controller);
-      assert.equal(whitelistedInvestor.expiry.getTime(), this.investor1.kyc.expiration.getTime());
+      assert(moment(whitelistedInvestor.expiry).isSame(moment().add(3, "months"), "days"));
+      assert(moment(whitelistedInvestor.from).isSame(moment().add(1, "years"), "days"));
+      assert(moment(whitelistedInvestor.to).isSame(moment(), "days"));
 
-      const transcript2 = await putInvestor(this.investor1, this.investoraddress1, this.tokenAddress, this.cWeb3);
-      const receipt = transcript2[0];
-      assert(receipt.description, "registers investor");
-      assert.typeOf(receipt.hash, "string");
+      await putInvestor(this.investor1, this.investoraddress1, this.tokenAddress, this.cWeb3);
 
       whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investoraddress1);
       assert.equal(whitelistedInvestor.addedBy, this.controller);
-      assert.equal(whitelistedInvestor.expiry.getTime(), this.investor1.kyc.expiration.getTime());
+      assert(moment(whitelistedInvestor.expiry).isSame(moment().add(3, "months"), "days"));
+      assert(moment(whitelistedInvestor.from).isSame(moment().add(1, "years"), "days"));
+      assert(moment(whitelistedInvestor.to).isSame(moment(), "days"));
     });
 
-    it("should update user representation to token", async function() {
-      let whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investoraddress1);
-      assert.equal(whitelistedInvestor.expiry.getTime(), this.investor1.kyc.expiration.getTime());
+    context("current KYC is in the past", async function() {
+      before(async function() {
+        // Stub the moment.diff function to allow us to move into the future
+        this.oldDiffFunction = moment.fn.diff;
+        moment.fn.diff = (a: any, b: any, c: any) => 1;
+      });
 
-      const investor1New: SecurityToken.Investor<Address> = {
-        id: this.investoraddress1,
-        kyc: {
-          commitment: "something", // TODO: What is this supposed to be?
-          expiration: new Date(2019, 11, 31),
-        },
-        accreditation: null, // TODO: Do we need to set this? If so, what?
-        country: "United States",
-      };
+      afterEach(function() {
+        moment.fn.diff = this.oldDiffFunction;
+      });
 
-      await putInvestor(investor1New, this.investoraddress1, this.tokenAddress, this.cWeb3);
-      whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investoraddress1);
-      assert.equal(whitelistedInvestor.expiry.getTime(), investor1New.kyc!.expiration.getTime());
+      it("should update KYC validity date to 3 months from now", async function() {
+        let whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investoraddress1);
+        assert.equal(whitelistedInvestor.addedBy, this.controller);
+
+        const investor1New: PMT.Investor = {
+          address: this.investoraddress1,
+          international: false,
+          kyc: true,
+        };
+
+        await putInvestor(investor1New, this.investoraddress1, this.tokenAddress, this.cWeb3);
+        whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investoraddress1);
+        assert(moment(whitelistedInvestor.expiry).isSame(moment().add(3, "months"), "days"));
+      });
+
     });
 
-    it("should detect non-KYC user", async function() {
-
-    });
-  });
-
-  describe("transferObstruction", () => {
-    it("should allow an OK trade", async function() {});
-    it("should detect shareholder limit violation");
-
-    describe("failing trades", async function() {
-      it("should fail a trade when the buyer is not OK for REG S");
-      it("should fail a trade when the seller is not OK for REG S");
-    });
+    context("the country has changed from international to US", async function() {
+      it("should remove investor", async function() {
+        
+      });
+    })
   });
 });
