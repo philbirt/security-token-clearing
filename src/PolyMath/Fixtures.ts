@@ -49,33 +49,15 @@ export const polymathUniverse = async (
   const tokenAddress = await deployPolymath(master, exchange, regime, web3);
   const portfolio: Map<string, number> = new Map([["CAP", 2000]]);
   const testingInvestors: Testing.Investor[] = await Promise.all(
-    //
-    // TODO: Determine if we need to use this configuration per investor,
-    //       or if we can just use a multimint configuration when using the CLI script.
-    //
     investors.map(async (investor) => {
       console.log(`Configuring investor ${investor.primaryWallet}`);
 
-      //
-      // TODO: Removed the first argument of the interface, we likely need to keep it
-      //       to conform to the overall interface
-      //
       // await putInvestor(investor.primaryWallet, tokenAddress, {
       //   controller: master,
       //   gasPrice: async () => {
       //     return 5;
       //   },
       //   web3,
-      // });
-
-      console.log("Issuing tokens");
-
-      //
-      // TODO: Determine if this can go away with a multimint configuration
-      //
-      // polymath.token.issueTokens(investor.address, 1e8, {
-      //   from: master,
-      //   gas: 2e6,
       // });
 
       return {
