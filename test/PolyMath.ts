@@ -6,7 +6,6 @@ import { deployPolymath } from "../src/PolyMath/Fixtures";
 import { putInvestor } from "../src/PolyMath/Interface";
 
 import * as PM from "polymathjs";
-import { NetworkParams } from "polymathjs/types";
 import * as Web3 from "web3";
 
 import {
