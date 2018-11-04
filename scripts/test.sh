@@ -36,5 +36,5 @@ cp ./test/support/capped_sto_data.yml polymath-core/CLI/data/capped_sto_data.yml
 tsc -p tsconfig.test.json && node_modules/.bin/mocha dist-test/* -t 10000
 
 # End ganache process
-killall node #update this to capture the pid of ganache and kill that process
+kill %%
 
