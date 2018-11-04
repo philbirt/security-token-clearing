@@ -1,5 +1,12 @@
 #! /bin/bash
 
+# Check truffle is below v5 (version currently in beta)
+TRUFFLE_VERSION=$(truffle version)
+if [[ "$TRUFFLE_VERSION" =~ "Truffle v5" ]]; then
+  echo "Requires Truffle v4.x; you currently have Truffle 5 installed"
+  exit 1
+fi
+
 # Launch ganache
 #
 # -l gas limit: set to full
