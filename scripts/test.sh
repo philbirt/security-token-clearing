@@ -40,7 +40,7 @@ cp ./test/support/privKeyLocal polymath-core/privKeyLocal
 cp ./test/support/capped_sto_data.yml polymath-core/CLI/data/capped_sto_data.yml
 
 # Run the tests
-tsc -p tsconfig.test.json && node_modules/.bin/mocha dist-test/* -t 10000
+tsc -p tsconfig.test.json && node_modules/.bin/mocha dist-test/* "$@" 
 
 # End ganache process
 kill %%

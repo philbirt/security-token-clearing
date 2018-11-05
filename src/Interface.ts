@@ -7,7 +7,7 @@ import {
   Tagged,
   Testing,
   Transcript
-} from "./Data";
+} from "./Types";
 import { ConfiguredWeb3 } from "./Web3";
 import * as Web3 from "web3";
 
