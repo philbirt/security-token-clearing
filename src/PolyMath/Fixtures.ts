@@ -25,15 +25,20 @@ export async function deployPolymath(
   // Deploy a SecurityToken & STO
   const deployOutput = execSync("node CLI/polymath-cli st20generator -c capped_sto_data.yml", { cwd: "polymath-core", timeout: 300000 }).toString();
 
-  const securityTokenInitialDeployMatches: any = deployOutput.match(/Deployed Token at address: (.*)/);
+  const securityTokenInitialDeployMatches = deployOutput.match(/Deployed Token at address: (.*)/);
   let securityTokenAddress;
 
-  if (securityTokenInitialDeployMatches) {
-    securityTokenAddress = securityTokenInitialDeployMatches[1];
-  } else {
+  if (securityTokenInitialDeployMatches == null) {
     // Security token has already been deployed
-    const securityTokenAlreadyDeployedMatches: any = deployOutput.match(/Token has already been deployed at address (.*). Skipping registration/);
-    securityTokenAddress = securityTokenAlreadyDeployedMatches[1];
+    const securityTokenAlreadyDeployedMatches = deployOutput.match(/Token has already been deployed at address (.*). Skipping registration/);
+
+    if (securityTokenAlreadyDeployedMatches == null) {
+      throw new Error("Deployment address not found!");
+    } else {
+      securityTokenAddress = securityTokenAlreadyDeployedMatches[1];
+    }
+  } else {
+    securityTokenAddress = securityTokenInitialDeployMatches[1];
   }
 
   return securityTokenAddress;
