@@ -1,0 +1,3 @@
+[submodule "polymath-core"]
+	path = polymath-core
+	url = git@github.com:PolymathNetwork/polymath-core.git
