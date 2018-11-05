@@ -17,7 +17,7 @@ import { putInvestor } from "./Interface";
 export async function deployPolymath(
   controller: string,
   exchange: string,
-  complianceType: "notRegulated" | "whitelisted" | "regulated",
+  complianceType: "REG-D" | "REG-S" | "REG-DS",
   web3: Web3,
 ) {
   // Retrive POLY from the faucet
@@ -43,7 +43,7 @@ export const polymathUniverse = async (
   master: string,
   exchange: string,
   investors: Exchange.Investor[],
-  regime: "regulated" | "notRegulated",
+  regime: "REG-D" | "REG-S" | "REG-DS",
   web3: Web3,
 ) => {
   const tokenAddress = await deployPolymath(master, exchange, regime, web3);
