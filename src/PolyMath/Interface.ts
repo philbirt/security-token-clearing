@@ -1,12 +1,11 @@
 // Polymath.js imports
 import * as PM from "polymathjs";
-import * as moment from "moment";
 
 import { BigNumber } from "bignumber.js";
 import { TransactionReceipt } from "ethereum-types";
 import * as Web3 from "web3";
 import { ConfiguredWeb3, txReceipt } from "../Web3";
-import { getInvestorFromWhitelist } from "./utils";
+import { getInvestorFromWhitelist, buildInvestor } from "./utils";
 
 // Security Token Clearing imports
 import * as Interface from "../Interface";
@@ -43,46 +42,13 @@ export async function putInvestor(
   const transferManager: any = await securityToken.getTransferManager();
 
   const whitelistedInvestor = await getInvestorFromWhitelist(transferManager, investor.address);
-  let pmInvestor: any;
+  const pmInvestor = buildInvestor(investor, whitelistedInvestor);
 
-  // If already whitelisted, disregard the from and to fields,
-  // only update KYC is the current value is in the past, and set it to 3 months from now
-  //
-  // If the investor is not already on the whitelist, set some default values, and
-  // in the future this could be configured via params to putInvestor
-  if (whitelistedInvestor) {
-    const expiry = (moment().diff(whitelistedInvestor.expiry, "days") > 0) ?
-      moment().add(3, "months").toDate() :
-      whitelistedInvestor.expiry;
-
-    pmInvestor = {
-      address: primaryWallet,
-      from: whitelistedInvestor.from,
-      to: whitelistedInvestor.to,
-      expiry,
-    };
-  } else {
-    pmInvestor = {
-      address: primaryWallet,
-      from: moment().add(1, "years").toDate(),
-      to: new Date(),
-      expiry: moment().add(3, "months").toDate(),
-    };
+  if (pmInvestor != null) {
+    const newInvestorTransaction: any = await transferManager.modifyWhitelist(pmInvestor);
+    const investorReceipt = await receipt(newInvestorTransaction.transactionHash);
+    appendToTranscript("registers investor", investorReceipt);
   }
-
-  // transferManager.modifyWhitelist handles "removes" by setting 0s for times
-  if (!investor.international) {
-    pmInvestor = {
-      address: primaryWallet,
-      from: moment().subtract(1, "years").toDate(),
-      to: moment().subtract(1, "years").toDate(),
-      expiry: moment().subtract(1, "years").toDate(),
-    };
-  }
-
-  const newInvestorTransaction: any = await transferManager.modifyWhitelist(pmInvestor);
-  const investorReceipt = await receipt(newInvestorTransaction.transactionHash);
-  appendToTranscript("registers investor", investorReceipt);
 
   return transcript;
 }

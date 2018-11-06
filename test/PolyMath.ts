@@ -94,32 +94,27 @@ describe("PolyMath interface", async () => {
     });
 
     it("should accurately install an investor", async function() {
-      const transcript = await putInvestor(this.investor2, this.investorAddress2, this.tokenAddress, this.cWeb3);
+      const transcript = await putInvestor(this.investor1, this.investorAddress1, this.tokenAddress, this.cWeb3);
       const receipt = transcript[0];
       assert(receipt.description, "registers investor");
       assert.typeOf(receipt.hash, "string");
 
-      const whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investorAddress2);
+      const whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investorAddress1);
       assert.equal(whitelistedInvestor.addedBy, this.controller);
       assert(moment(whitelistedInvestor.expiry).isSame(moment().add(3, "months"), "days"));
       assert(moment(whitelistedInvestor.from).isSame(moment().add(1, "years"), "days"));
       assert(moment(whitelistedInvestor.to).isSame(moment(), "days"));
     });
 
-    it("should be idempotent, does not update KYC or transfer validity dates on multiple calls", async function() {
+    it("should be idempotent, does not update on multiple calls", async function() {
       let whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investorAddress1);
       assert.equal(whitelistedInvestor.addedBy, this.controller);
       assert(moment(whitelistedInvestor.expiry).isSame(moment().add(3, "months"), "days"));
       assert(moment(whitelistedInvestor.from).isSame(moment().add(1, "years"), "days"));
       assert(moment(whitelistedInvestor.to).isSame(moment(), "days"));
 
-      await putInvestor(this.investor1, this.investorAddress1, this.tokenAddress, this.cWeb3);
-
-      whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investorAddress1);
-      assert.equal(whitelistedInvestor.addedBy, this.controller);
-      assert(moment(whitelistedInvestor.expiry).isSame(moment().add(3, "months"), "days"));
-      assert(moment(whitelistedInvestor.from).isSame(moment().add(1, "years"), "days"));
-      assert(moment(whitelistedInvestor.to).isSame(moment(), "days"));
+      const transcript = await putInvestor(this.investor1, this.investorAddress1, this.tokenAddress, this.cWeb3);
+      assert.deepEqual(transcript, []);
     });
 
     context("current KYC is in the past", async function() {
@@ -161,19 +156,18 @@ describe("PolyMath interface", async () => {
         this.investor3 = investor3;
       });
 
-      it("should add the investor but in a state unable to trade", async function() {
-        await putInvestor(this.investor3, this.investorAddress3, this.tokenAddress, this.cWeb3);
+      it("should not add the investor", async function() {
+        const transcript = await putInvestor(this.investor3, this.investorAddress3, this.tokenAddress, this.cWeb3);
+        assert.deepEqual(transcript, []);
 
         const whitelistedInvestor = await getInvestorFromWhitelist(this.transferManager, this.investorAddress3);
-        assert(moment(whitelistedInvestor.expiry).isSame(moment().subtract(1, "years"), "days"));
-        assert(moment(whitelistedInvestor.from).isSame(moment().subtract(1, "years"), "days"));
-        assert(moment(whitelistedInvestor.to).isSame(moment().subtract(1, "years"), "days"));
+        assert.equal(whitelistedInvestor, null);
       });
 
       context("the investor has been whitelisted previously", async function() {
         before(async function() {
           const investor4: PMT.Investor = {
-            address: this.investorAddress3,
+            address: this.investorAddress4,
             international: true,
             kyc: true,
           };
@@ -191,7 +185,7 @@ describe("PolyMath interface", async () => {
           assert(moment(whitelistedInvestor.from).isSame(moment().subtract(1, "years"), "days"));
           assert(moment(whitelistedInvestor.to).isSame(moment().subtract(1, "years"), "days"));
         });
-      })
-    })
+      });
+    });
   });
 });
